@@ -1,17 +1,21 @@
 // SortedDriver.cpp
+// Victor Anthony
+// 10/29/2017
 
 // tom bailey   1445  25 mar 2014
 // Construct sorted sequences and call functions that 
 //   process the sorted sequences.
 
 
-#include "RandomUtilities.h"
-#include "ContainerPrinting.h"
-#include "winTimer.h"
 #include <list>
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
+
+#include "RandomUtilities.h"
+#include "ContainerPrinting.h"
+#include "winTimer.h"
 
 
 using namespace std;
@@ -23,13 +27,12 @@ vector<double>
 getNums(size_t listSize, double minNum, double maxNum)
 {
 	vector<double> theList;
-	for (size_t i = 0; i < listSize; ++i)
+	for (size_t x = 0; x < listSize; ++x)
 	{
 		theList.push_back(randReal(minNum, maxNum));
 	}
 
 	sort(begin(theList), end(theList));
-
 	return theList;
 }
 
@@ -41,10 +44,10 @@ list<string>
 getWords(size_t numWords, size_t wordLength, string alphabet)
 {
 	list<string> theWords;
-	for (size_t i = 0; i < numWords; ++i)
+	for (size_t x = 0; x < numWords; ++x)
 	{
 		string word;
-		for (size_t j = 0; j < wordLength; ++j)
+		for (size_t y = 0; y < wordLength; ++y)
 		{
 			word += alphabet.at(randInt(0, alphabet.size()));
 		}
@@ -52,7 +55,6 @@ getWords(size_t numWords, size_t wordLength, string alphabet)
 	}
 
 	theWords.sort();
-
 	return theWords;
 }
 
@@ -63,19 +65,87 @@ getWords(size_t numWords, size_t wordLength, string alphabet)
 double
 mostIsolated(vector<double> & number)
 {
-	// STUB  STUB  STUB
-	return -123.456;
+
+	double distance;
+	double isolated;
+	double totalDist;
+	double first;
+	double second;
+
+	isolated = number[0];
+	distance = abs(number[1] - number[0]);
+	totalDist = distance;
+
+	for (int x = 1; x < (number.size() - 1); x++) {
+		first = abs(number[x] - number[x - 1]);
+		second = abs(number[x + 1] - number[x]);
+
+		if (second > first) {
+			if (first > distance) {
+				distance = first;
+				isolated = number[x];
+				totalDist = first + second;
+			}
+			if (first == distance && (x - 1) == 0) {
+				isolated = x;
+			}
+			if (first == distance) {
+				double iDistance = first + second;
+				if (iDistance > totalDist) {
+					distance = first;
+					isolated = number[x];
+					totalDist = iDistance;
+				}
+			}
+		}
+		if (first > second) {
+			if (second > distance) {
+				distance = second;
+				isolated = number[x];
+				totalDist = first + second;
+			}
+			if (second == distance) {
+				double iDistance = first + second;
+				if (iDistance > totalDist) {
+					distance = second;
+					isolated = number[x];
+					totalDist = iDistance;
+				}
+			}
+		}
+	}
+
+	first = abs(number[number.size() - 1] - number[number.size() - 2]);
+	if (first > distance) {
+		distance = first;
+		isolated = number[number.size() - 1];
+	}
+	return isolated;
 }
 
 
 // pre:  A and B are sorted.
 // post: The number of strings in A that do not occur in B
 //         has been returned.
-int
-unmatched(list<string> & A, list<string> & B)
+int unmatched(list<string> & A, list<string> & B)
 {
-	// STUB  STUB  STUB
-	return -1;
+	int counter = 0;
+	list<string>::iterator x = A.begin();
+	list<string>::iterator y = B.begin();
+
+	while (y != B.end() && x != A.end()) {
+		if (*x == *y) {
+			x++;
+		}
+		else if (*x > *y) {
+			y++;
+		}
+		else if (*x < *y) {
+			counter++;
+			x++;
+		}
+	}
+	return counter;
 }
 
 
@@ -122,6 +192,7 @@ main()
 	cout << endl << endl;
 	cout << "Count the unmatched words" << endl
 		<< "-------------------------" << endl << endl;
+
 	while (true)
 	{
 		cout << "Enter size for words lists: ";
@@ -167,6 +238,5 @@ main()
 			<< "calculated in " << time() << " seconds"
 			<< endl << endl;
 	}
-
 	return 0;
 }
